@@ -1,0 +1,26 @@
+= Liferay Database Config Reader
+
+== Setup
+  jgem install liferay_database_config_reader
+  
+Add the gem dependency in config/warble.rb
+  config.gems << 'liferay_database_config_reader'
+  
+Create a preinitializer.rb in config/ if you do not have one, after add the snippet below
+  if RUBY_PLATFORM =~ /java/ and ENV['RAILS_ENV'] == 'production'
+    require 'rubygems'
+    require 'liferay_database_config_reader'
+    LiferayDatabaseConfigReader.init!
+  end
+  
+Change you config/database.yml
+  <% if RUBY_PLATFORM =~ /java/ and ENV['RAILS_ENV'] == 'production' %>               
+  production:
+    adapter: <%= LiferayDatabaseConfigReader.attr[:adapter] %>
+    database: <%= LiferayDatabaseConfigReader.attr[:database] %>
+    username: <%= LiferayDatabaseConfigReader.attr[:username] %>
+    password: <%= LiferayDatabaseConfigReader.attr[:password] %>
+    encoding: unicode
+    pool: 5
+    timeout: 5000
+  <% end %>
