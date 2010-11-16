@@ -6,15 +6,13 @@ module LiferayDatabaseConfigReader
   
   @@properties ||= {}
   
-  CATALINA_HOME = java.lang.System.getProperty('catalina.home')
+  CATALINA_HOME = java.lang.System.getProperty('catalina.home') || ''
   PROPERTIES_EXT_FILE = 'portal-ext.properties'
   WEB_INF_CLASSES = CATALINA_HOME + '/webapps/ROOT/WEB-INF/classes/'
 
-  def self.init!
-    path = File.expand_path(WEB_INF_CLASSES + PROPERTIES_EXT_FILE)
-    
-    puts "\n[LiferayDatabaseReader] :: RAILS_ENV=#{ENV['RAILS_ENV']}"
-    puts "[LiferayDatabaseReader] :: reading #{path}"
+  def self.init! path = File.expand_path(WEB_INF_CLASSES + PROPERTIES_EXT_FILE)
+    log "RAILS_ENV=#{ENV['RAILS_ENV']}"
+    log "reading #{path}"
 
     properties = Properties.new
     properties.load(FileInputStream.new(path))
@@ -30,11 +28,44 @@ module LiferayDatabaseConfigReader
     @@properties[:host], @@properties[:port] = fragments[1].split(':')
     @@properties[:database] = fragments[2]
     
-    puts "[LiferayDatabaseReader] :: adapter: #{attr[:adapter]}, host: #{attr[:host]}:#{attr[:port]}, database: #{attr[:database]}\n\n"
+    log "adapter: #{attr[:adapter]}, host: #{attr[:host]}:#{attr[:port]}, database: #{attr[:database]}\n"
   end
 
   def self.attr; @@properties end
+  
+  def self.log msg
+    msg = "[LiferayDatabaseReader] :: #{msg}"
+    (defined? RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER.info(msg) : STDOUT.puts(msg)
+  end
 
 end
 
 require 'liferay_database_config_reader'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
