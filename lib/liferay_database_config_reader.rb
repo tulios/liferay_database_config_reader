@@ -10,7 +10,7 @@ module LiferayDatabaseConfigReader
   PROPERTIES_EXT_FILE = 'portal-ext.properties'
   WEB_INF_CLASSES = CATALINA_HOME + '/webapps/ROOT/WEB-INF/classes/'
 
-  def self.init! path = File.expand_path(WEB_INF_CLASSES + PROPERTIES_EXT_FILE)
+  def self.init! path = default_path
     log "RAILS_ENV=#{ENV['RAILS_ENV']}"
     log "reading #{path}"
 
@@ -32,6 +32,13 @@ module LiferayDatabaseConfigReader
   end
 
   def self.attr; @@properties end
+                        
+  def self.default_path
+    path = File.expand_path(CATALINA_HOME + '../' + PROPERTIES_EXT_FILE)
+    return path if File.exist? path
+    
+    File.expand_path(WEB_INF_CLASSES + PROPERTIES_EXT_FILE)
+  end
   
   def self.log msg
     msg = "[LiferayDatabaseReader] :: #{msg}"
